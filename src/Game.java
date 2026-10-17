@@ -14,6 +14,7 @@ public class Game extends JFrame implements Runnable {
     int currentMousePosiotionY = -1;
 
     public static void main(String[] args) {
+        System.out.println("START");
         Game game = new Game();
         game.area.setWall(6, 7);
         game.area.setWall(6, 8);

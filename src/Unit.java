@@ -94,10 +94,11 @@ public class Unit {
 
         while (tx != -1 && ty != -1) {
             path.push(new int[]{tx, ty});
+            int oldTx = tx;
             tx = p[ty][tx][0];
-            ty = p[ty][tx][1];
+            ty = p[ty][oldTx][1];
         }
-
+        System.out.println("check!");
     }
 
     public boolean isActive() {
