@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferStrategy;
 
 public class Game extends JFrame implements Runnable {
     Unit[] units = {
@@ -23,7 +24,7 @@ public class Game extends JFrame implements Runnable {
         game.area.setWall(6, 4);
         game.area.setWall(6, 3);
         game.area.setWall(6, 2);
-        game.area.setWall(6, 1);
+//        game.area.setWall(6, 1);
         game.area.setWall(6, 0);
         game.setDefaultCloseOperation(2);
         for (int i = 0; i < game.units.length; ++i) {
@@ -109,34 +110,54 @@ public class Game extends JFrame implements Runnable {
             g.setColor(Color.RED);
             if (currentMousePosiotionY != -1 && currentMousePosiotionX != -1) {
                 g.fill3DRect(area.getLeft() + currentMousePosiotionX * area.getSizeX(),
-                            area.getTop() + currentMousePosiotionY * area.getSizeY(), area.getSizeX(), area.getSizeY(), true);
+                        area.getTop() + currentMousePosiotionY * area.getSizeY(), area.getSizeX(), area.getSizeY(), true);
             }
         }
     }
     private void drawUnits(Graphics g) {
-        g.setColor(Color.YELLOW);
         for (int i = 0; i < units.length; ++i) {
             Unit unit = units[i];
+            g.setColor(Color.YELLOW);
+            if (!unit.isLife()) {
+                g.setColor(Color.RED);
+            }
             g.fillOval(area.getLeft() + unit.getX() * area.getSizeX(),
-                        area.getTop() + unit.getY() * area.getSizeY(), area.getSizeX(), area.getSizeY());
+                    area.getTop() + unit.getY() * area.getSizeY(), area.getSizeX(), area.getSizeY());
+
         }
         g.setColor(Color.BLACK);
         for (int i = 0; i < units.length; ++i) {
             Unit unit = units[i];
-            if (unit.isActive()) {
+            if (unit.isActive() && unit.isLife()) {
                 g.drawOval(area.getLeft() + unit.getX() * area.getSizeX(),
-                            area.getTop() + unit.getY() * area.getSizeY(), area.getSizeX(), area.getSizeY());
+                        area.getTop() + unit.getY() * area.getSizeY(), area.getSizeX(), area.getSizeY());
             }
+        }
+
+        for (int i = 0; i < units.length; ++i) {
+            g.setColor(Color.BLACK);
+            Unit unit = units[i];
+            g.fill3DRect(area.getLeft() + unit.getX() * area.getSizeX(),
+                    area.getTop() + unit.getY() * area.getSizeY() - 2, area.getSizeX(), 2, true);
+            g.setColor((Color.GREEN));
+            double size =  area.getSizeX() * unit.getLife();
+            g.fill3DRect(area.getLeft() + unit.getX() * area.getSizeX(),
+                    area.getTop() + unit.getY() * area.getSizeY() - 2, (area.getSizeX() * unit.getLife()) / 10, 2, true);
         }
     }
 
     public void paint(Graphics g) {
+        this.createBufferStrategy(2);
+        BufferStrategy bs = this.getBufferStrategy();
+        g = (Graphics2D) bs.getDrawGraphics();
         super.paint(g);
 
         drawGrid(g);
         drawWall(g);
         drawClickMousePosition(g);
         drawUnits(g);
+
+        bs.show();
     }
 
     private void updateMousePosition(int x, int y) {
@@ -166,6 +187,24 @@ public class Game extends JFrame implements Runnable {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            for (int i = 0; i < units.length; ++i) {
+                Unit unit_i = units[i];
+                if (!unit_i.isLife()) {
+                    continue;
+                }
+                for (int j = i + 1; j < units.length; ++j) {
+                    Unit unit_j = units[j];
+                    if (!unit_j.isLife()) {
+                        continue;
+                    }
+                    if (unit_i.checkUnitNearby(unit_j)) {
+                        unit_i.lifeReduction();
+                        unit_j.lifeReduction();
+                        System.out.println("CHECK");
                     }
                 }
             }
