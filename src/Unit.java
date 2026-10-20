@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Queue;
@@ -9,9 +10,13 @@ public class Unit {
     private int life = 10;
     Stack<int[]> path = new Stack<>();
     private boolean isActive = false;
-    public Unit(int x, int y) {
+    private Color command;
+
+
+    public Unit(int x, int y, Color command) {
         this.x = x;
         this.y = y;
+        this.command = command;
     }
 
     public int getX() {
@@ -20,6 +25,10 @@ public class Unit {
 
     public int getY() {
         return y;
+    }
+
+    public Color getCommand() {
+        return command;
     }
 
     public boolean isLife() {
@@ -74,7 +83,7 @@ public class Unit {
                 }
             }
         }
-        lifeReduction();
+//        lifeReduction();
     }
 
     public void setToCoor(int tx, int ty, Area area) {

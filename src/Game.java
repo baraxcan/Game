@@ -6,9 +6,12 @@ import java.awt.image.BufferStrategy;
 
 public class Game extends JFrame implements Runnable {
     Unit[] units = {
-            new Unit(1, 1),
-            new Unit(2, 2),
-            new Unit(0, 0)
+        new Unit(2, 0, Color.RED),
+        new Unit(2, 2, Color.RED),
+        new Unit(0, 2, Color.RED),
+        new Unit(7, 7, Color.BLUE),
+        new Unit(7, 9, Color.BLUE),
+        new Unit(9, 7, Color.BLUE)
     };
     Area area = new Area();
     int currentMousePosiotionX = -1;
@@ -17,15 +20,24 @@ public class Game extends JFrame implements Runnable {
     public static void main(String[] args) {
         System.out.println("START");
         Game game = new Game();
-        game.area.setWall(6, 7);
-        game.area.setWall(6, 8);
-        game.area.setWall(6, 9);
+        game.area.setWall(4, 0);
+        game.area.setWall(4, 1);
+//        game.area.setWall(4, 2);
+        game.area.setWall(4, 3);
+        game.area.setWall(4, 4);
+        game.area.setWall(3, 4);
+//        game.area.setWall(2, 4);
+        game.area.setWall(1, 4);
+        game.area.setWall(0, 4);
+        game.area.setWall(5, 9);
+        game.area.setWall(5, 8);
+//        game.area.setWall(5, 7);
+        game.area.setWall(5, 6);
+        game.area.setWall(5, 5);
         game.area.setWall(6, 5);
-        game.area.setWall(6, 4);
-        game.area.setWall(6, 3);
-        game.area.setWall(6, 2);
-//        game.area.setWall(6, 1);
-        game.area.setWall(6, 0);
+//        game.area.setWall(7, 5);
+        game.area.setWall(8, 5);
+        game.area.setWall(9, 5);
         game.setDefaultCloseOperation(2);
         for (int i = 0; i < game.units.length; ++i) {
             if (!game.area.checkUnit(game.units[i].getX(), game.units[i].getY())) {
@@ -117,9 +129,9 @@ public class Game extends JFrame implements Runnable {
     private void drawUnits(Graphics g) {
         for (int i = 0; i < units.length; ++i) {
             Unit unit = units[i];
-            g.setColor(Color.YELLOW);
+            g.setColor(unit.getCommand());
             if (!unit.isLife()) {
-                g.setColor(Color.RED);
+                g.setColor(Color.BLACK);
             }
             g.fillOval(area.getLeft() + unit.getX() * area.getSizeX(),
                     area.getTop() + unit.getY() * area.getSizeY(), area.getSizeX(), area.getSizeY());
@@ -138,11 +150,11 @@ public class Game extends JFrame implements Runnable {
             g.setColor(Color.BLACK);
             Unit unit = units[i];
             g.fill3DRect(area.getLeft() + unit.getX() * area.getSizeX(),
-                    area.getTop() + unit.getY() * area.getSizeY() - 2, area.getSizeX(), 2, true);
+                    area.getTop() + unit.getY() * area.getSizeY() - 3, area.getSizeX(), 3, true);
             g.setColor((Color.GREEN));
             double size =  area.getSizeX() * unit.getLife();
             g.fill3DRect(area.getLeft() + unit.getX() * area.getSizeX(),
-                    area.getTop() + unit.getY() * area.getSizeY() - 2, (area.getSizeX() * unit.getLife()) / 10, 2, true);
+                    area.getTop() + unit.getY() * area.getSizeY() - 3, (area.getSizeX() * unit.getLife()) / 10, 3, true);
         }
     }
 
@@ -184,7 +196,7 @@ public class Game extends JFrame implements Runnable {
                     Unit unit = units[i];
                     unit.move(area);
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(200);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -201,7 +213,7 @@ public class Game extends JFrame implements Runnable {
                     if (!unit_j.isLife()) {
                         continue;
                     }
-                    if (unit_i.checkUnitNearby(unit_j)) {
+                    if (unit_i.checkUnitNearby(unit_j) && unit_i.getCommand() != unit_j.getCommand()) {
                         unit_i.lifeReduction();
                         unit_j.lifeReduction();
                         System.out.println("CHECK");
