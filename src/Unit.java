@@ -3,16 +3,20 @@ import java.util.Arrays;
 import java.util.Queue;
 import java.util.Stack;
 
-public class Unit {
+public abstract class Unit {
     private int x;
     private int y;
     private int life = 10;
+    private Area area = null;
     Stack<int[]> path = new Stack<>();
     private boolean isActive = false;
-    public Unit(int x, int y) {
+    public Unit(int x, int y, Area area) {
         this.x = x;
         this.y = y;
+        this.area = area;
     }
+    public int tx = -1;
+    public int ty = -1;
 
     public int getX() {
         return x;
@@ -47,42 +51,17 @@ public class Unit {
         if (!isLife()) {
             return;
         }
-        if (path.isEmpty()) return;
+        if (path.isEmpty()) {
+            tx = -1;
+            ty = -1;
+            return;
+        };
         int[] temp = path.pop();
-        int tx = temp[0], ty = temp[1];
-        if (Math.abs(x - tx) > Math.abs(y - ty)) {
-            if (x < tx) {
-                if (!area.checkWall(x + 1, y) && !area.checkUnit(x + 1, y)) {
-                    ++x;
-                }
-            }
-            else if (x > tx) {
-                if (!area.checkWall(x - 1, y) && !area.checkUnit(x - 1, y)) {
-                    --x;
-                }
-            }
-        }
-        else {
-            if (y < ty) {
-                if (!area.checkWall(x, y + 1) && !area.checkUnit(x, y + 1)) {
-                    ++y;
-                }
-            }
-            else if (y > ty) {
-                if (!area.checkWall(x, y - 1) && !area.checkUnit(x, y - 1)) {
-                    --y;
-                }
-            }
-        }
-        lifeReduction();
+        x = temp[0]; y = temp[1];
+        setToCoor(tx, ty);
     }
 
-    public void setToCoor(int tx, int ty, Area area) {
-        path = Algorithms.BFS(x, y, tx, ty, area);
-        if (path.empty()) {
-            System.out.println("Путь не найден");
-        }
-    }
+    public abstract void setToCoor(int tx, int ty);
 
     public boolean isActive() {
         return isActive;
@@ -90,5 +69,19 @@ public class Unit {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public Area getArea() {
+        return area;
+    }
+
+    public void setPath(Stack<int[]> path) {
+        this.path = path;
+    }
+
+    public void setTarget(int tx, int ty) {
+        this.tx = tx;
+        this.ty = ty;
+        setToCoor(tx, ty);
     }
 }

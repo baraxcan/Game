@@ -5,14 +5,15 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 
 public class Game extends JFrame implements Runnable {
-    Unit[] units = {
-            new Unit(1, 1),
-            new Unit(2, 2),
-            new Unit(0, 0)
-    };
     Area area = new Area();
-    int currentMousePosiotionX = -1;
-    int currentMousePosiotionY = -1;
+    Unit[] units = {
+            new Knight(0, 0, area),
+            new Rook(1, 1, area),
+            new Queen(2, 2, area),
+            new Bishop(3, 3, area)
+    };
+    private int currentMousePosiotionX = -1;
+    private int currentMousePosiotionY = -1;
 
     public static void main(String[] args) {
         System.out.println("START");
@@ -54,7 +55,7 @@ public class Game extends JFrame implements Runnable {
                     Unit unit = game.units[i];
                     if (unit.isActive()) {
                         unit.setActive(false);
-                        unit.setToCoor(game.currentMousePosiotionX, game.currentMousePosiotionY, game.area);
+                        unit.setTarget(game.currentMousePosiotionX, game.currentMousePosiotionY);
                         game.repaint();
                     }
                 }
@@ -179,12 +180,20 @@ public class Game extends JFrame implements Runnable {
     @Override
     public void run() {
         while (true) {
+
+            for (int i = 0; i < units.length; ++i) {
+                Unit unit = units[i];
+                area.setUnit(unit.getX(), unit.getY());
+            }
+
             if (currentMousePosiotionY != -1 && currentMousePosiotionX != -1) {
                 for (int i = 0; i < units.length; ++i) {
                     Unit unit = units[i];
+                    area.unsetPlace(unit.getX(), unit.getY());
                     unit.move(area);
+                    area.setUnit(unit.getX(), unit.getY());
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(200);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
